@@ -64,9 +64,7 @@ class AirCargoProblem(Problem):
                     for a in self.airports:
                         precond_pos = [expr("At({}, {})".format(c, a)),
                                        expr("At({}, {})".format(p, a)),
-                                       expr("Cargo({})".format(c)),
-                                       expr("Plane({})".format(p)),
-                                       expr("Airport({})".format(a))]
+                                       ]
                         precond_neg = []
                         effect_add = [expr("In({}, {})".format(c, p))]
                         effect_rem = [expr("At({}, {})".format(c, a))]
@@ -89,9 +87,7 @@ class AirCargoProblem(Problem):
                     for a in self.airports:
                         precond_pos = [expr("In({}, {})".format(c, p)),
                                        expr("At({}, {})".format(p, a)),
-                                       expr("Cargo({})".format(c)),
-                                       expr("Plane({})".format(p)),
-                                       expr("Airport({})".format(a))]
+                                       ]
                         precond_neg = []
                         effect_add = [expr("At({}, {})".format(c, a))]
                         effect_rem = [expr("In({}, {})".format(c, p))]
@@ -112,9 +108,7 @@ class AirCargoProblem(Problem):
                     if fr != to:
                         for p in self.planes:
                             precond_pos = [expr("At({}, {})".format(p, fr)),
-                                           expr("Plane({})".format(p)),
-                                           expr("Airport({})".format(fr)),
-                                           expr("Airport({})".format(to))]
+                                           ]
                             precond_neg = []
                             effect_add = [expr("At({}, {})".format(p, to))]
                             effect_rem = [expr("At({}, {})".format(p, fr))]
@@ -135,7 +129,9 @@ class AirCargoProblem(Problem):
         :return: list of Action objects
         """
         # TODO implement
-        possible_actions = []
+        kb = PropKB()
+        kb.tell(decode_state(state, self.state_map).pos_sentence())
+        possible_actions = [a for a in self.actions_list if a.check_precond(kb, a.args)]
         return possible_actions
 
     def result(self, state: str, action: Action):
