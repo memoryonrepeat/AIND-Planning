@@ -199,9 +199,16 @@ class AirCargoProblem(Problem):
         executed.
         '''
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        count = 0
-        return count
+        
+        # INTUITION: Since this heuristic allows skipping preconditions, each goal condition can be 
+        # achieved by only executing the preceding action. In this air cargo problem, we only concern with
+        # placing each cargo at the specified airport, which can be achieved with a single Unload()
+        # action. Note that since Unload() only deals with one cargo at a time, this eliminates the 
+        # possibility of satisfying more than one goal expression with a single action, and thereby makes 
+        # it a 1-1 mapping between action-goal. So to calculate this heuristics, we can indirectly calculate the number
+        # of unsatisfied goal expressions instead.
 
+        return len([s for (i, s) in enumerate(self.state_map) if s in self.goal and node.state[i] == "F"])
 
 def air_cargo_p1() -> AirCargoProblem:
     cargos = ['C1', 'C2']
