@@ -131,8 +131,7 @@ class AirCargoProblem(Problem):
         # TODO implement
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
-        possible_actions = [a for a in self.actions_list if a.check_precond(kb, a.args)]
-        return possible_actions
+        return [a for a in self.actions_list if a.check_precond(kb, a.args)]
 
     def result(self, state: str, action: Action):
         """ Return the state that results from executing the given
@@ -144,7 +143,22 @@ class AirCargoProblem(Problem):
         :return: resulting state after action
         """
         # TODO implement
-        new_state = FluentState([], [])
+        
+        old_state = decode_state(state, self.state_map)
+        pos_fluents = set(old_state.pos)
+        neg_fluents = set(old_state.neg)
+
+        # Sanity check if action is valid (satisfy both pos and neg preconditions at least) before executing
+        if set(action.precond_pos).issubset(old_state.pos) and set(action.precond_neg).issubset(old_state.neg):
+            # Update fluents with resulting effects
+            for effect_rem in action.effect_rem:
+                pos_fluents.discard(effect_rem)
+                neg_fluents.add(effect_rem)
+            for effect_add in action.effect_add:
+                pos_fluents.add(effect_add)
+                neg_fluents.discard(effect_add)
+
+        new_state = FluentState(list(pos_fluents), list(neg_fluents))
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
