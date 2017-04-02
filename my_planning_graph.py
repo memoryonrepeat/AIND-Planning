@@ -404,7 +404,7 @@ class PlanningGraph():
         :return: bool
         '''
         # TODO test for Inconsistent Effects between nodes
-        return bool((set(node_a1.action.effect_rem) & set(node_a2.action.effect_add)) or (set(node_a1.action.effect_add) & set(node_a2.action.effect_rem)))
+        return bool((set(node_a1.action.effect_rem) & set(node_a2.action.effect_add)) | (set(node_a1.action.effect_add) & set(node_a2.action.effect_rem)))
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         '''
@@ -435,7 +435,23 @@ class PlanningGraph():
         '''
 
         # TODO test for Competing Needs between nodes
-        return False
+        # print(node_a1.action.precond_pos,node_a2.action.precond_neg,node_a1.action.precond_neg,node_a2.action.precond_pos)
+        
+        # NOTE: Being mutex is more than just being negation, therefore can not reuse the earlier approaches
+        # Need to check for mutex relations between both parent sets
+        
+        a1_precond_mutexes = set()
+        a2_precond_mutexes = set()
+        
+        for item in node_a1.parents: 
+            for m in item.mutex:
+                a1_precond_mutexes.add(m)
+
+        for item in node_a2.parents: 
+            for m in item.mutex:
+                a2_precond_mutexes.add(m)
+            
+        return bool((a1_precond_mutexes & node_a2.parents) | (a2_precond_mutexes & node_a1.parents))
 
     def update_s_mutex(self, nodeset: set):
         ''' Determine and update sibling mutual exclusion for S-level nodes
