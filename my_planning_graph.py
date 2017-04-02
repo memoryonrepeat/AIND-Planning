@@ -435,7 +435,6 @@ class PlanningGraph():
         '''
 
         # TODO test for Competing Needs between nodes
-        # print(node_a1.action.precond_pos,node_a2.action.precond_neg,node_a1.action.precond_neg,node_a2.action.precond_pos)
         
         # NOTE: Being mutex is more than just being negation, therefore can not reuse the earlier approaches
         # Need to check for mutex relations between both parent sets
@@ -486,7 +485,7 @@ class PlanningGraph():
         :return: bool
         '''
         # TODO test for negation between nodes
-        return False
+        return isinstance(node_s1, node_s2.__class__) and (node_s1.symbol == node_s2.symbol) and (node_s1.is_pos != node_s2.is_pos)
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
         '''
