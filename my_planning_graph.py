@@ -504,7 +504,27 @@ class PlanningGraph():
         :return: bool
         '''
         # TODO test for Inconsistent Support between nodes
-        return False
+        
+        # s1_precond_mutexes = set()
+        # s2_precond_mutexes = set()
+        # print('s1',node_s1.symbol)
+        # print('s2',node_s2.symbol)
+        # for item in node_s1.parents: 
+        #     print('s1 parent',item.action.name,item.action.args)
+        #     for m in item.mutex:
+        #         print('s1 mutex',m.action.name,m.action.args)
+        #         s1_precond_mutexes.add(m)
+
+        # for item in node_s2.parents: 
+        #     print('s2 parent',item.action.name,item.action.args)
+        #     for m in item.mutex:
+        #         print('s2 mutex',m.action.name,m.action.args)
+        #         s2_precond_mutexes.add(m)
+
+        # print('test1',node_s1.parents - s2_precond_mutexes)
+        # print('test2',node_s2.parents - s1_precond_mutexes)
+
+        return  not((bool(node_s1.parents - s2_precond_mutexes) and bool(node_s2.parents - s1_precond_mutexes)) or bool(node_s1.parents & node_s2.parents))
 
     def h_levelsum(self) -> int:
         '''The sum of the level costs of the individual goals (admissible if goals independent)
