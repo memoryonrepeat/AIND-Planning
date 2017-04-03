@@ -505,21 +505,21 @@ class PlanningGraph():
         '''
         # TODO test for Inconsistent Support between nodes
         
-        # s1_precond_mutexes = set()
-        # s2_precond_mutexes = set()
+        s1_precond_mutexes = set()
+        s2_precond_mutexes = set()
         # print('s1',node_s1.symbol)
         # print('s2',node_s2.symbol)
-        # for item in node_s1.parents: 
-        #     print('s1 parent',item.action.name,item.action.args)
-        #     for m in item.mutex:
-        #         print('s1 mutex',m.action.name,m.action.args)
-        #         s1_precond_mutexes.add(m)
+        for item in node_s1.parents: 
+            # print('s1 parent',item.action.name,item.action.args)
+            for m in item.mutex:
+                # print('s1 mutex',m.action.name,m.action.args)
+                s1_precond_mutexes.add(m)
 
-        # for item in node_s2.parents: 
-        #     print('s2 parent',item.action.name,item.action.args)
-        #     for m in item.mutex:
-        #         print('s2 mutex',m.action.name,m.action.args)
-        #         s2_precond_mutexes.add(m)
+        for item in node_s2.parents: 
+            # print('s2 parent',item.action.name,item.action.args)
+            for m in item.mutex:
+                # print('s2 mutex',m.action.name,m.action.args)
+                s2_precond_mutexes.add(m)
 
         # print('test1',node_s1.parents - s2_precond_mutexes)
         # print('test2',node_s2.parents - s1_precond_mutexes)
@@ -532,6 +532,14 @@ class PlanningGraph():
         :return: int
         '''
         level_sum = 0
-        # TODO implement
-        # for each goal in the problem, determine the level cost, then add them together
+
+        processed_goals = set()
+
+        for goal in self.problem.goal:
+            for level,states in enumerate(self.s_levels):
+                for state in states:
+                    if state.literal == goal and not goal in processed_goals:
+                        level_sum += level
+                        processed_goals.add(goal)
+
         return level_sum
