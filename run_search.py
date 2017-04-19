@@ -93,6 +93,8 @@ def main(p_choices, s_choices):
     problems = [PROBLEMS[i-1] for i in map(int, p_choices)]
     searches = [SEARCHES[i-1] for i in map(int, s_choices)]
 
+    #NOTE: Control timeout using gtimeout
+
     with open("benchmark.txt", "a") as log_file:
         print("\n**************Commencing new benchmark round**************")
         print("\n**************Commencing new benchmark round**************", file=log_file)
