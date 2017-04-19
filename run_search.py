@@ -49,7 +49,7 @@ class PrintableProblem(InstrumentedProblem):
         return '{:^10d}  {:^10d}  {:^10d}'.format(self.succs, self.goal_tests, self.states)
 
 
-def run_search(problem, search_function, parameter=None):
+def run_search(problem, search_function, parameter, log_file):
 
     start = timer()
     ip = PrintableProblem(problem)
@@ -59,9 +59,12 @@ def run_search(problem, search_function, parameter=None):
         node = search_function(ip)
     end = timer()
     print("\nExpansions   Goal Tests   New Nodes")
+    print("\nExpansions   Goal Tests   New Nodes", file=log_file)
     print("{}\n".format(ip))
-    show_solution(node, end - start)
-    print()
+    print("{}\n".format(ip), file=log_file)
+    show_solution(node, end - start, log_file)
+    print("--------------------------------------")
+    print("--------------------------------------", file=log_file)
 
 
 def manual():
@@ -90,21 +93,26 @@ def main(p_choices, s_choices):
     problems = [PROBLEMS[i-1] for i in map(int, p_choices)]
     searches = [SEARCHES[i-1] for i in map(int, s_choices)]
 
-    for pname, p in problems:
+    with open("benchmark.txt", "a") as log_file:
+        print("\n**************Commencing new benchmark round**************")
+        print("\n**************Commencing new benchmark round**************", file=log_file)
+        for pname, p in problems:
+            for sname, s, h in searches:
+                hstring = h if not h else " with {}".format(h)
+                print("\nSolving {} using {}{}...".format(pname, sname, hstring))
+                print("\nSolving {} using {}{}...".format(pname, sname, hstring), file=log_file)
 
-        for sname, s, h in searches:
-            hstring = h if not h else " with {}".format(h)
-            print("\nSolving {} using {}{}...".format(pname, sname, hstring))
-
-            _p = p()
-            _h = None if not h else getattr(_p, h)
-            run_search(_p, s, _h)
+                _p = p()
+                _h = None if not h else getattr(_p, h)
+                run_search(_p, s, _h, log_file)
 
 
-def show_solution(node, elapsed_time):
+def show_solution(node, elapsed_time, log_file):
     print("Plan length: {}  Time elapsed in seconds: {}".format(len(node.solution()), elapsed_time))
+    print("Plan length: {}  Time elapsed in seconds: {}".format(len(node.solution()), elapsed_time), file=log_file)
     for action in node.solution():
         print("{}{}".format(action.name, action.args))
+        print("{}{}".format(action.name, action.args), file=log_file)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Solve air cargo planning problems " + 
